@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2024 by jangwon0218 (http://jsbin.com/ditiyic/25/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch Pad</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #rainbow {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background-image: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, purple);
+        }
+
+        #scratch-pad {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: transparent;
+            cursor: crosshair;
+        }
+
+        .background-image {
+            position: absolute;
+            width: 3%;
+            height: auto;
+            transition: width 0.3s, height 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div id="rainbow">
+        <img class="background-image" src="https://i.imgur.com/M2GkkZs.jpg" alt="Background Image 1">
+        <img class="background-image" src="https://i.imgur.com/8QGFMDt.png" alt="Background Image 2">
+        <img class="background-image" src="https://i.imgur.com/8h1N62P.jpg" alt="Background Image 3">
+        <img class="background-image" src="https://i.imgur.com/0vWJKDo.jpg" alt="Background Image 4">
+        <img class="background-image" src="https://i.imgur.com/36C1s74.gif" alt="Background Image 5">
+        <img class="background-image" src="https://i.imgur.com/tGysR1n.jpg" alt="Background Image 6">
+        <img class="background-image" src="https://i.imgur.com/Eb345xy.jpg" alt="Background Image 7">
+        <img class="background-image" src="https://i.imgur.com/l0qLFA4.mp4" alt="Background Image 8">
+        <img class="background-image" src="https://i.imgur.com/sFxqDSr.gif" alt="Background Image 9">
+        <img class="background-image" src="https://i.imgur.com/IsliJlj.jpeg" alt="Background Image 10">
+        <img class="background-image" src="https://i.imgur.com/QAkJpEw.jpeg" alt="Background Image 11">
+        <img class="background-image" src="https://i.imgur.com/gTfZx66.png" alt="Background Image 12">
+        <img class="background-image" src="https://i.imgur.com/zSFYUVQ.jpg" alt="Background Image 13">
+        <img class="background-image" src="https://i.imgur.com/r5BZDZE.jpeg" alt="Background Image 14">
+        <img class="background-image" src="https://i.imgur.com/AvZ2fCz.png" alt="Background Image 15">
+      
+
+      
+        <canvas id="scratch-pad"></canvas>
+    </div>
+
+    <script src="script.js"></script>
+<script id="jsbin-javascript">
+const scratchPad = document.getElementById('scratch-pad');
+const ctx = scratchPad.getContext('2d');
+const backgroundImages = document.querySelectorAll('.background-image');
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+let enlargedImageIndex = null;
+
+function getRandomPosition(element) {
+    let x, y;
+    do {
+        x = Math.floor(Math.random() * (window.innerWidth - element.width));
+        y = Math.floor(Math.random() * (window.innerHeight - element.height));
+    } while (isOverlapping(x, y, element.width, element.height));
+    return { x, y };
+}
+
+function isOverlapping(x, y, width, height) {
+    for (const image of backgroundImages) {
+        const rect1 = image.getBoundingClientRect();
+        const rect2 = { x, y, width, height };
+        if (
+            rect1.x < rect2.x + rect2.width &&
+            rect1.x + rect1.width > rect2.x &&
+            rect1.y < rect2.y + rect2.height &&
+            rect1.y + rect1.height > rect2.y
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function resetBackgroundImagePositions() {
+    backgroundImages.forEach((image) => {
+        const { x, y } = getRandomPosition(image);
+        image.style.left = `${x}px`;
+        image.style.top = `${y}px`;
+    });
+}
+
+
+backgroundImages.forEach((image, index) => {
+    image.addEventListener('click', () => {
+        toggleImageSize(index);
+    });
+});
+
+resetBackgroundImagePositions();
+
+// 캔버스 크기 설정
+scratchPad.width = window.innerWidth;
+scratchPad.height = window.innerHeight;
+
+// 캔버스에 검은색 배경 그리기
+ctx.fillStyle = 'black';
+ctx.fillRect(0, 0, scratchPad.width, scratchPad.height);
+
+scratchPad.addEventListener('mousedown', (event) => {
+    isDrawing = true;
+    lastX = event.offsetX;
+    lastY = event.offsetY;
+});
+
+scratchPad.addEventListener('mousemove', (event) => {
+    if (isDrawing) {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(event.offsetX, event.offsetY, 3, 0, 3 * Math.PI);
+        ctx.fill();
+        lastX = event.offsetX;
+        lastY = event.offsetY;
+    }
+});
+
+scratchPad.addEventListener('mouseup', () => {
+    isDrawing = false;
+});
+
+window.addEventListener('resize', resetBackgroundImagePositions);
+</script>
+</body>
+</html>
